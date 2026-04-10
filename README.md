@@ -91,7 +91,3 @@ Open `http://127.0.0.1:5000`.
 - SQL queries use parameterized inputs.
 - Sensitive credentials are managed through `.env`.
 - `.env` is ignored by Git to prevent secret leaks.
-
-## License
-
-This project is intended for educational and portfolio use. Add a license file if you plan to distribute it.
