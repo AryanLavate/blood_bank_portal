@@ -1,0 +1,109 @@
+{% extends 'layout.html' %}
+{% block title %}Search Donors - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">{{ session.get('hospital_name', 'Hospital') }}</p>
+        <a class="nav-link" href="{{ url_for('hospital.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('hospital.create_request') }}">Post Blood Request</a>
+        <a class="nav-link" href="{{ url_for('hospital.organ_request') }}">Post Organ Request</a>
+        <a class="nav-link" href="{{ url_for('hospital.blood_stock') }}">Blood Stock</a>
+        <a class="nav-link active" href="{{ url_for('hospital.view_donors') }}">Search Donors</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Search Donors</h2>
+        <p class="page-subtitle">Filter donors by blood group, city, and availability.</p>
+
+        <!-- Search Filter Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('hospital.view_donors') }}" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Blood Group</label>
+                        <select name="blood_group" class="form-select">
+                            <option value="">-- Any --</option>
+                            <option {{ 'selected' if blood_group=='A+' }}>A+</option>
+                            <option {{ 'selected' if blood_group=='A-' }}>A-</option>
+                            <option {{ 'selected' if blood_group=='B+' }}>B+</option>
+                            <option {{ 'selected' if blood_group=='B-' }}>B-</option>
+                            <option {{ 'selected' if blood_group=='AB+' }}>AB+</option>
+                            <option {{ 'selected' if blood_group=='AB-' }}>AB-</option>
+                            <option {{ 'selected' if blood_group=='O+' }}>O+</option>
+                            <option {{ 'selected' if blood_group=='O-' }}>O-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">City</label>
+                        <input type="text" name="city" class="form-control" value="{{ city }}" placeholder="Enter city">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Availability</label>
+                        <select name="availability" class="form-select">
+                            <option value="">-- Any --</option>
+                            <option value="Available" {{ 'selected' if availability=='Available' }}>Available</option>
+                            <option value="Not Available" {{ 'selected' if availability=='Not Available' }}>Not
+                                Available</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary-red w-100">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Donors Table -->
+        <div class="card">
+            <div class="card-header">
+                Donors Found: {{ donors|length }}
+            </div>
+            <div class="card-body p-0">
+                {% if donors %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Blood Group</th>
+                                <th>City</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Organ Donor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in donors %}
+                            <tr>
+                                <td>{{ d[1] }}</td>
+                                <td>{{ d[2] }}</td>
+                                <td><strong style="color:var(--primary);">{{ d[3] }}</strong></td>
+                                <td>{{ d[8] }}</td>
+                                <td>{{ d[5] }}</td>
+                                <td>
+                                    {% if d[9] == 'Available' %}
+                                    <span class="badge-available">Available</span>
+                                    {% else %}
+                                    <span class="badge-unavailable">Not Available</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ 'Yes' if d[4] else 'No' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    No donors found matching your filters.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

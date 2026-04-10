@@ -1,0 +1,130 @@
+{% extends 'layout.html' %}
+{% block title %}Statistics - Admin{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Admin Panel</p>
+        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_users') }}">Manage Donors</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_hospitals') }}">Manage Hospitals</a>
+        <a class="nav-link" href="{{ url_for('admin.blood_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.organ_requests') }}">Organ Requests</a>
+        <a class="nav-link active" href="{{ url_for('admin.statistics') }}">Statistics</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Statistics</h2>
+        <p class="page-subtitle">Donation summary and blood stock overview.</p>
+
+        <!-- Summary Numbers -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card red">
+                    <div class="stat-number">{{ stats.total_users }}</div>
+                    <div class="stat-label">Total Donors</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card blue">
+                    <div class="stat-number">{{ stats.total_hospitals }}</div>
+                    <div class="stat-label">Total Hospitals</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card orange">
+                    <div class="stat-number">{{ stats.total_requests }}</div>
+                    <div class="stat-label">Blood Requests</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card green">
+                    <div class="stat-number">{{ stats.total_donations }}</div>
+                    <div class="stat-label">Total Donations</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donation History Table -->
+        <div class="card mb-4">
+            <div class="card-header">Donation History</div>
+            <div class="card-body p-0">
+                {% if donations %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Donor Name</th>
+                                <th>Hospital</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in donations %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ d[1] }}</td>
+                                <td>{{ d[2] }}</td>
+                                <td>{{ d[3] }}</td>
+                                <td>{{ d[4] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">No donations recorded yet.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Blood Stock Table -->
+        <div class="card">
+            <div class="card-header secondary">Blood Stock Across All Hospitals</div>
+            <div class="card-body p-0">
+                {% if stock %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Hospital</th>
+                                <th>City</th>
+                                <th>Blood Group</th>
+                                <th>Units</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in stock %}
+                            <tr>
+                                <td>{{ s[0] }}</td>
+                                <td>{{ s[1] }}</td>
+                                <td><strong>{{ s[2] }}</strong></td>
+                                <td>
+                                    {% if s[3] == 0 %}
+                                    <span class="badge-unavailable">Out of Stock</span>
+                                    {% elif s[3] < 5 %} <span style="color:#e67e22; font-weight:600;">{{ s[3] }}
+                                        (Low)</span>
+                                        {% else %}
+                                        <span style="color:#27ae60; font-weight:600;">{{ s[3] }}</span>
+                                        {% endif %}
+                                </td>
+                                <td>{{ s[4].strftime('%d %b %Y') if s[4] else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">No stock data available.</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

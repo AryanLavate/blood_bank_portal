@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+{% block title %}Edit Profile - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Donor Menu</p>
+        <a class="nav-link" href="{{ url_for('user.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('user.profile') }}">My Profile</a>
+        <a class="nav-link active" href="{{ url_for('user.edit_profile') }}">Edit Profile</a>
+        <a class="nav-link" href="{{ url_for('user.view_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('user.notifications') }}">Notifications</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Edit Profile</h2>
+        <p class="page-subtitle">Update your personal information.</p>
+
+        <div class="card" style="max-width:520px;">
+            <div class="card-header">Profile Details</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user.edit_profile') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ user[1] }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Age</label>
+                        <input type="number" name="age" class="form-control" value="{{ user[2] }}" min="18" max="65"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control" value="{{ user[5] }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">City / District</label>
+                        <input type="text" name="city" class="form-control" value="{{ user[8] }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="organ_donor" id="organ_donor"
+                                value="1" {{ 'checked' if user[4] }}>
+                            <label class="form-check-label" for="organ_donor">
+                                Register as organ donor
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary-red">Save Changes</button>
+                    <a href="{{ url_for('user.profile') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

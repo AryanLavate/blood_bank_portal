@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+{% block title %}Register as Donor - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper" style="padding: 2rem 1rem;">
+    <div class="auth-card" style="max-width: 560px;">
+        <h2 class="auth-title">Register as Donor</h2>
+        <p class="auth-subtitle">Create your donor profile to help save lives.</p>
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Your full name" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="age">Age</label>
+                    <input type="number" id="age" name="age" class="form-control" placeholder="e.g. 25" min="18"
+                        max="65" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="blood">Blood Group</label>
+                    <select id="blood" name="blood" class="form-select" required>
+                        <option value="">-- Select --</option>
+                        <option>A+</option>
+                        <option>A-</option>
+                        <option>B+</option>
+                        <option>B-</option>
+                        <option>AB+</option>
+                        <option>AB-</option>
+                        <option>O+</option>
+                        <option>O-</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="10-digit number"
+                        required>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="example@email.com"
+                        required>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Minimum 6 characters" required minlength="6">
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" for="city">City / District</label>
+                    <input type="text" id="city" name="city" class="form-control" placeholder="Your city or district"
+                        required>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="organ_donor" name="organ_donor" value="1">
+                        <label class="form-check-label" for="organ_donor">
+                            I want to register as an organ donor
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-2">
+                    <button type="submit" class="btn btn-primary-red w-100">Create Account</button>
+                </div>
+            </div>
+        </form>
+
+        <hr class="auth-divider">
+        <p class="text-center small text-muted">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" style="color:var(--primary); font-weight:600;">Login here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home - Blood Bank and Organ Donation Portal{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <h1>Blood Bank and Organ Donation Portal</h1>
+    <p>
+        Connecting donors, hospitals, and blood banks in real time.
+        Save lives by donating blood or registering as an organ donor today.
+    </p>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-light fw-semibold">Register as Donor</a>
+    <a href="{{ url_for('auth.hospital_register') }}" class="btn btn-outline-light fw-semibold">Register Hospital</a>
+</section>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center fw-bold mb-4" style="color: var(--secondary);">What We Offer</h2>
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background-color:#fdecea;">
+                    <!-- Drop icon using text -->
+                    <span style="font-size:1.6rem; color:#c0392b;">&#9733;</span>
+                </div>
+                <h5 class="fw-semibold">Blood Donation</h5>
+                <p class="text-muted small mt-2">
+                    Register as a donor, update your availability, and get notified
+                    when blood of your type is urgently needed nearby.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background-color:#eaf4fb;">
+                    <span style="font-size:1.6rem; color:#2980b9;">&#9829;</span>
+                </div>
+                <h5 class="fw-semibold">Organ Donation</h5>
+                <p class="text-muted small mt-2">
+                    Opt in as an organ donor on your profile. Hospitals can post
+                    organ transplant requests for emergency coordination.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon" style="background-color:#eafaf1;">
+                    <span style="font-size:1.6rem; color:#27ae60;">&#43;</span>
+                </div>
+                <h5 class="fw-semibold">Hospital Network</h5>
+                <p class="text-muted small mt-2">
+                    Hospitals manage blood stock levels and post emergency requests
+                    that are automatically matched with available donors.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Blood Stock Public View -->
+<div class="container mb-5">
+    <h4 class="fw-bold" style="color: var(--secondary);">Blood Availability (Public)</h4>
+    <p class="text-muted small">Current blood stock across registered hospitals.</p>
+    <a href="{{ url_for('auth.home') }}" class="btn btn-sm" style="background:var(--primary); color:#fff;">
+        View Full Stock
+    </a>
+</div>
+
+<!-- Login / Register Prompt -->
+<div class="container mb-5">
+    <div class="card">
+        <div class="card-body text-center py-4">
+            <h5 class="fw-semibold mb-3">Already have an account?</h5>
+            <a href="{{ url_for('auth.login') }}" class="btn me-2"
+                style="background:var(--primary); color:#fff; border-radius:20px; padding: 0.5rem 1.8rem;">
+                Donor Login
+            </a>
+            <a href="{{ url_for('auth.hospital_login') }}" class="btn me-2"
+                style="background:var(--secondary); color:#fff; border-radius:20px; padding: 0.5rem 1.8rem;">
+                Hospital Login
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

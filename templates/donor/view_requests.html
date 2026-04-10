@@ -1,0 +1,115 @@
+{% extends 'layout.html' %}
+{% block title %}Blood Requests Near Me - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Donor Menu</p>
+        <a class="nav-link" href="{{ url_for('user.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('user.profile') }}">My Profile</a>
+        <a class="nav-link" href="{{ url_for('user.edit_profile') }}">Edit Profile</a>
+        <a class="nav-link active" href="{{ url_for('user.view_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('user.notifications') }}">Notifications</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Blood Requests Near You</h2>
+        <p class="page-subtitle">
+            Showing requests in your city <strong>{{ user[8] }}</strong> (Your blood group: <strong>{{ user[3] }}</strong>).
+        </p>
+
+        <div class="card">
+            <div class="card-header">Open Requests</div>
+            <div class="card-body p-0">
+                {% if requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Hospital</th>
+                                <th>Blood Group</th>
+                                <th>Units Needed</th>
+                                <th>City</th>
+                                <th>Urgency</th>
+                                <th>Posted On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ req[1] }}</td>
+                                <td><strong>{{ req[2] }}</strong></td>
+                                <td>{{ req[3] }}</td>
+                                <td>{{ req[4] }}</td>
+                                <td>
+                                    {% if req[5] == 'Emergency' %}
+                                    <span class="badge-urgent">Emergency</span>
+                                    {% else %}
+                                    <span class="badge-normal">{{ req[5] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ req[6].strftime('%d %b %Y') if req[6] else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    No open blood requests found in your city.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-header">Open Organ Requests</div>
+            <div class="card-body p-0">
+                {% if organ_requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Hospital</th>
+                                <th>Organ Type</th>
+                                <th>Blood Group</th>
+                                <th>City</th>
+                                <th>Urgency</th>
+                                <th>Posted On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in organ_requests %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ req[1] }}</td>
+                                <td><strong>{{ req[2] }}</strong></td>
+                                <td>{{ req[3] }}</td>
+                                <td>{{ req[4] }}</td>
+                                <td>
+                                    {% if req[5] == 'Emergency' %}
+                                    <span class="badge-urgent">Emergency</span>
+                                    {% else %}
+                                    <span class="badge-normal">{{ req[5] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ req[6].strftime('%d %b %Y') if req[6] else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">
+                    No open organ requests found in your city.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

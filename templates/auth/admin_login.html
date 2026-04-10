@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+{% block title %}Admin Login - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="auth-title">Admin Login</h2>
+        <p class="auth-subtitle">Restricted access. Administrators only.</p>
+
+        <form method="POST" action="{{ url_for('auth.admin_login') }}">
+            <div class="mb-3">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Admin username"
+                    required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Admin password"
+                    required>
+            </div>
+            <button type="submit" class="btn btn-primary-red w-100">Login as Admin</button>
+        </form>
+
+        <hr class="auth-divider">
+        <p class="text-center small text-muted">
+            <a href="{{ url_for('auth.home') }}" style="color:var(--secondary);">Back to Home</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

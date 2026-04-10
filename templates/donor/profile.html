@@ -1,0 +1,110 @@
+{% extends 'layout.html' %}
+{% block title %}My Profile - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Donor Menu</p>
+        <a class="nav-link" href="{{ url_for('user.dashboard') }}">Dashboard</a>
+        <a class="nav-link active" href="{{ url_for('user.profile') }}">My Profile</a>
+        <a class="nav-link" href="{{ url_for('user.edit_profile') }}">Edit Profile</a>
+        <a class="nav-link" href="{{ url_for('user.view_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('user.notifications') }}">Notifications</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">My Profile</h2>
+        <p class="page-subtitle">Your personal information and donation history.</p>
+
+        <div class="row g-4">
+            <div class="col-md-5">
+                <div class="card h-100">
+                    <div class="card-header">Personal Details</div>
+                    <div class="card-body">
+                        <table class="table table-borderless mb-0">
+                            <tr>
+                                <td class="fw-semibold" style="width:45%;">Name</td>
+                                <td>{{ user[1] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Age</td>
+                                <td>{{ user[2] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Blood Group</td>
+                                <td><strong style="color:var(--primary);">{{ user[3] }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Phone</td>
+                                <td>{{ user[5] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Email</td>
+                                <td>{{ user[6] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">City</td>
+                                <td>{{ user[8] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Status</td>
+                                <td>
+                                    {% if user[9] == 'Available' %}
+                                    <span class="badge-available">Available</span>
+                                    {% else %}
+                                    <span class="badge-unavailable">Not Available</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Organ Donor</td>
+                                <td>{{ 'Yes' if user[4] else 'No' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Verified</td>
+                                <td>{{ 'Yes' if user[10] else 'Pending' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card h-100">
+                    <div class="card-header secondary">Donation History</div>
+                    <div class="card-body p-0">
+                        {% if donations %}
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Hospital</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in donations %}
+                                <tr>
+                                    <td>{{ d[1] }}</td>
+                                    <td>{{ d[2] }}</td>
+                                    <td>{{ d[3] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="p-4 text-center text-muted">No donations recorded yet.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ url_for('user.edit_profile') }}" class="btn btn-primary-red">Edit Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

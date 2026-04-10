@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+{% block title %}Post Organ Request - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">{{ session.get('hospital_name', 'Hospital') }}</p>
+        <a class="nav-link" href="{{ url_for('hospital.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('hospital.create_request') }}">Post Blood Request</a>
+        <a class="nav-link active" href="{{ url_for('hospital.organ_request') }}">Post Organ Request</a>
+        <a class="nav-link" href="{{ url_for('hospital.blood_stock') }}">Blood Stock</a>
+        <a class="nav-link" href="{{ url_for('hospital.view_donors') }}">Search Donors</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Post an Organ Transplant Request</h2>
+        <p class="page-subtitle">Post an urgent organ transplant requirement for coordination.</p>
+
+        <div class="card" style="max-width:500px;">
+            <div class="card-header">Organ Request Details</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('hospital.organ_request') }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Organ Type</label>
+                        <select name="organ_type" class="form-select" required>
+                            <option value="">-- Select Organ --</option>
+                            <option>Kidney</option>
+                            <option>Liver</option>
+                            <option>Heart</option>
+                            <option>Lung</option>
+                            <option>Cornea</option>
+                            <option>Pancreas</option>
+                            <option>Bone Marrow</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Patient Blood Group</label>
+                        <select name="blood_group" class="form-select">
+                            <option value="">-- Any / Unknown --</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" name="city" class="form-control" value="{{ hospital[5] }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Urgency Level</label>
+                        <select name="urgency" class="form-select">
+                            <option value="Normal">Normal</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea name="notes" class="form-control" rows="3"
+                            placeholder="Optional notes about patient condition or requirements"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-red w-100">Post Organ Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

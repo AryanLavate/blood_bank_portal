@@ -1,0 +1,176 @@
+{% extends 'layout.html' %}
+{% block title %}Donor Dashboard - Blood Bank Portal{% endblock %}
+
+{% block content %}
+
+<!-- Reusable sidebar macro for donor -->
+<div class="sidebar-layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <p class="sidebar-heading">Donor Menu</p>
+        <a class="nav-link active" href="{{ url_for('user.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('user.profile') }}">My Profile</a>
+        <a class="nav-link" href="{{ url_for('user.edit_profile') }}">Edit Profile</a>
+        <a class="nav-link" href="{{ url_for('user.view_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('user.notifications') }}">
+            Notifications
+            {% if unread_count > 0 %}
+            <span class="badge"
+                style="background:var(--accent); color:#fff; border-radius:10px; padding:2px 7px; font-size:0.75rem;">
+                {{ unread_count }}
+            </span>
+            {% endif %}
+        </a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <h2 class="page-title">Welcome, {{ user[1] }}</h2>
+        <p class="page-subtitle">Your donor dashboard. Stay available, save lives.</p>
+
+        <!-- Status Card -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card red">
+                    <div class="stat-number">{{ user[3] }}</div>
+                    <div class="stat-label">Blood Group</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card blue">
+                    <div class="stat-number">{{ user[8] }}</div>
+                    <div class="stat-label">City</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card {{ 'green' if user[9] == 'Available' else 'orange' }}">
+                    <div class="stat-number">{{ user[9] }}</div>
+                    <div class="stat-label">Availability</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card {{ 'green' if user[4] else 'orange' }}">
+                    <div class="stat-number">{{ 'Yes' if user[4] else 'No' }}</div>
+                    <div class="stat-label">Organ Donor</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Availability -->
+        <div class="card mb-4">
+            <div class="card-header">Update Availability Status</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('user.update_availability') }}"
+                    class="d-flex gap-3 align-items-center">
+                    <select name="status" class="form-select" style="max-width:200px;">
+                        <option value="Available" {{ 'selected' if user[9]=='Available' }}>Available</option>
+                        <option value="Not Available" {{ 'selected' if user[9]=='Not Available' }}>Not Available
+                        </option>
+                    </select>
+                    <button type="submit" class="btn btn-primary-red">Update</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Nearby Blood Requests -->
+        <div class="card">
+            <div class="card-header">
+                Nearby Blood Requests in {{ user[8] }}
+            </div>
+            <div class="card-body p-0">
+                {% if requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Hospital</th>
+                                <th>Blood Group</th>
+                                <th>Units Needed</th>
+                                <th>City</th>
+                                <th>Urgency</th>
+                                <th>Posted On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr>
+                                <td>{{ req[1] }}</td>
+                                <td><strong>{{ req[2] }}</strong></td>
+                                <td>{{ req[3] }}</td>
+                                <td>{{ req[4] }}</td>
+                                <td>
+                                    {% if req[5] == 'Emergency' %}
+                                    <span class="badge-urgent">Emergency</span>
+                                    {% else %}
+                                    <span class="badge-normal">{{ req[5] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ req[6].strftime('%d %b %Y') if req[6] else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">
+                    No blood requests found in your city at this time.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Nearby Organ Requests -->
+        <div class="card mt-4">
+            <div class="card-header">
+                Nearby Organ Requests in {{ user[8] }}
+            </div>
+            <div class="card-body p-0">
+                {% if organ_requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Hospital</th>
+                                <th>Organ Type</th>
+                                <th>Blood Group</th>
+                                <th>City</th>
+                                <th>Urgency</th>
+                                <th>Posted On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in organ_requests %}
+                            <tr>
+                                <td>{{ req[1] }}</td>
+                                <td><strong>{{ req[2] }}</strong></td>
+                                <td>{{ req[3] }}</td>
+                                <td>{{ req[4] }}</td>
+                                <td>
+                                    {% if req[5] == 'Emergency' %}
+                                    <span class="badge-urgent">Emergency</span>
+                                    {% else %}
+                                    <span class="badge-normal">{{ req[5] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ req[6].strftime('%d %b %Y') if req[6] else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">
+                    No organ requests found in your city at this time.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

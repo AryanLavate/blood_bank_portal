@@ -1,0 +1,157 @@
+{% extends 'layout.html' %}
+{% block title %}Hospital Dashboard - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <p class="sidebar-heading">{{ session.get('hospital_name', 'Hospital') }}</p>
+        <a class="nav-link active" href="{{ url_for('hospital.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('hospital.create_request') }}">Post Blood Request</a>
+        <a class="nav-link" href="{{ url_for('hospital.organ_request') }}">Post Organ Request</a>
+        <a class="nav-link" href="{{ url_for('hospital.blood_stock') }}">Blood Stock</a>
+        <a class="nav-link" href="{{ url_for('hospital.view_donors') }}">Search Donors</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="page-title">Hospital Dashboard</h2>
+        <p class="page-subtitle">{{ hospital[1] }} - {{ hospital[5] }}</p>
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card red">
+                    <div class="stat-number">{{ requests|length }}</div>
+                    <div class="stat-label">Blood Requests Posted</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card blue">
+                    <div class="stat-number">{{ organ_requests|length }}</div>
+                    <div class="stat-label">Organ Requests Posted</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card green">
+                    <div class="stat-number">{{ stock|length }}</div>
+                    <div class="stat-label">Blood Groups in Stock</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blood Requests Table -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Recent Blood Requests</span>
+                <a href="{{ url_for('hospital.create_request') }}" class="btn btn-sm"
+                    style="background:#fff; color:var(--primary); font-weight:600;">
+                    + New Request
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Blood Group</th>
+                                <th>Units</th>
+                                <th>City</th>
+                                <th>Urgency</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in requests %}
+                            <tr>
+                                <td><strong>{{ r[2] }}</strong></td>
+                                <td>{{ r[3] }}</td>
+                                <td>{{ r[4] }}</td>
+                                <td>
+                                    {% if r[5] == 'Emergency' %}
+                                    <span class="badge-urgent">Emergency</span>
+                                    {% else %}
+                                    <span class="badge-normal">{{ r[5] }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if r[6] == 'Open' %}
+                                    <span class="badge-available">Open</span>
+                                    {% else %}
+                                    <span class="badge-unavailable">Fulfilled</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if r[6] == 'Open' %}
+                                    <form method="POST" action="{{ url_for('hospital.close_request', req_id=r[0]) }}"
+                                        data-confirm="Mark this request as fulfilled?">
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            Mark Fulfilled
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">No blood requests posted yet.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Blood Stock Summary -->
+        <div class="card">
+            <div class="card-header secondary d-flex justify-content-between align-items-center">
+                <span>Blood Stock Summary</span>
+                <a href="{{ url_for('hospital.blood_stock') }}" class="btn btn-sm"
+                    style="background:#fff; color:var(--secondary); font-weight:600;">
+                    Update Stock
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if stock %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Blood Group</th>
+                                <th>Units Available</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in stock %}
+                            <tr>
+                                <td><strong>{{ s[0] }}</strong></td>
+                                <td>
+                                    {% if s[1] == 0 %}
+                                    <span class="badge-unavailable">Out of Stock</span>
+                                    {% elif s[1] < 5 %} <span style="color:#e67e22; font-weight:600;">{{ s[1] }}
+                                        (Low)</span>
+                                        {% else %}
+                                        <span style="color:#27ae60; font-weight:600;">{{ s[1] }}</span>
+                                        {% endif %}
+                                </td>
+                                <td>{{ s[2].strftime('%d %b %Y') if s[2] else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">No blood stock data. Update your stock.</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

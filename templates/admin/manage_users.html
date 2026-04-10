@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+{% block title %}Manage Donors - Admin{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Admin Panel</p>
+        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a class="nav-link active" href="{{ url_for('admin.manage_users') }}">Manage Donors</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_hospitals') }}">Manage Hospitals</a>
+        <a class="nav-link" href="{{ url_for('admin.blood_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.organ_requests') }}">Organ Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.statistics') }}">Statistics</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Manage Donors</h2>
+        <p class="page-subtitle">{{ users|length }} registered donor(s) in the system.</p>
+
+        <div class="card">
+            <div class="card-header">All Donors</div>
+            <div class="card-body p-0">
+                {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Blood Group</th>
+                                <th>City</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Verified</th>
+                                <th>Organ</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ u[1] }}</td>
+                                <td>{{ u[2] }}</td>
+                                <td><strong style="color:var(--primary);">{{ u[3] }}</strong></td>
+                                <td>{{ u[8] }}</td>
+                                <td>{{ u[6] }}</td>
+                                <td>
+                                    {% if u[9] == 'Available' %}
+                                    <span class="badge-available">Available</span>
+                                    {% else %}
+                                    <span class="badge-unavailable">Not Available</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ 'Yes' if u[10] else 'Pending' }}</td>
+                                <td>{{ 'Yes' if u[4] else 'No' }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        {% if not u[10] %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin.verify_user_route', user_id=u[0]) }}">
+                                            <button class="btn btn-sm btn-outline-success">Verify</button>
+                                        </form>
+                                        {% endif %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin.delete_user_route', user_id=u[0]) }}"
+                                            data-confirm="Delete this donor account permanently?">
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">No donors registered yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

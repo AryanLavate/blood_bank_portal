@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+{% block title %}Admin Dashboard - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <p class="sidebar-heading">Admin Panel</p>
+        <a class="nav-link active" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_users') }}">Manage Donors</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_hospitals') }}">Manage Hospitals</a>
+        <a class="nav-link" href="{{ url_for('admin.blood_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.organ_requests') }}">Organ Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.statistics') }}">Statistics</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="page-title">Admin Dashboard</h2>
+        <p class="page-subtitle">Overview of the whole system.</p>
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-3">
+                <div class="stat-card red">
+                    <div class="stat-number">{{ stats.total_users }}</div>
+                    <div class="stat-label">Registered Donors</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card blue">
+                    <div class="stat-number">{{ stats.total_hospitals }}</div>
+                    <div class="stat-label">Hospitals</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card orange">
+                    <div class="stat-number">{{ stats.total_requests }}</div>
+                    <div class="stat-label">Blood Requests</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card green">
+                    <div class="stat-number">{{ stats.total_donations }}</div>
+                    <div class="stat-label">Donations Recorded</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card text-center py-4">
+                    <div class="card-body">
+                        <h6 class="fw-semibold">Manage Donors</h6>
+                        <p class="text-muted small">View, verify, or remove donor accounts.</p>
+                        <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary-red btn-sm">
+                            Go to Donors
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center py-4">
+                    <div class="card-body">
+                        <h6 class="fw-semibold">Manage Hospitals</h6>
+                        <p class="text-muted small">Verify or remove hospital registrations.</p>
+                        <a href="{{ url_for('admin.manage_hospitals') }}" class="btn btn-primary-red btn-sm">
+                            Go to Hospitals
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center py-4">
+                    <div class="card-body">
+                        <h6 class="fw-semibold">Blood Requests</h6>
+                        <p class="text-muted small">Monitor and manage all blood requests.</p>
+                        <a href="{{ url_for('admin.blood_requests') }}" class="btn btn-primary-red btn-sm">
+                            View Requests
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block title %}Manage Hospitals - Admin{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Admin Panel</p>
+        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_users') }}">Manage Donors</a>
+        <a class="nav-link active" href="{{ url_for('admin.manage_hospitals') }}">Manage Hospitals</a>
+        <a class="nav-link" href="{{ url_for('admin.blood_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.organ_requests') }}">Organ Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.statistics') }}">Statistics</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">Manage Hospitals</h2>
+        <p class="page-subtitle">{{ hospitals|length }} hospital(s) registered.</p>
+
+        <div class="card">
+            <div class="card-header">All Hospitals</div>
+            <div class="card-body p-0">
+                {% if hospitals %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Hospital Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Verified</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for h in hospitals %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ h[1] }}</td>
+                                <td>{{ h[2] }}</td>
+                                <td>{{ h[4] }}</td>
+                                <td>{{ h[5] }}</td>
+                                <td>{{ 'Yes' if h[6] else 'Pending' }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        {% if not h[6] %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin.verify_hospital_route', hospital_id=h[0]) }}">
+                                            <button class="btn btn-sm btn-outline-success">Verify</button>
+                                        </form>
+                                        {% endif %}
+                                        <form method="POST"
+                                            action="{{ url_for('admin.delete_hospital_route', hospital_id=h[0]) }}"
+                                            data-confirm="Delete this hospital account? All associated requests will also be removed.">
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">No hospitals registered yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

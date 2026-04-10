@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+{% block title %}Blood Requests - Admin{% endblock %}
+
+{% block content %}
+<div class="sidebar-layout">
+    <nav class="sidebar">
+        <p class="sidebar-heading">Admin Panel</p>
+        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_users') }}">Manage Donors</a>
+        <a class="nav-link" href="{{ url_for('admin.manage_hospitals') }}">Manage Hospitals</a>
+        <a class="nav-link active" href="{{ url_for('admin.blood_requests') }}">Blood Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.organ_requests') }}">Organ Requests</a>
+        <a class="nav-link" href="{{ url_for('admin.statistics') }}">Statistics</a>
+        <hr style="border-color:rgba(255,255,255,0.1); margin:1rem 1.5rem;">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+
+    <div class="main-content">
+        <h2 class="page-title">All Blood Requests</h2>
+        <p class="page-subtitle">Monitor all blood requests posted across the system.</p>
+
+        <div class="card">
+            <div class="card-header">Blood Requests ({{ requests|length }} total)</div>
+            <div class="card-body p-0">
+                {% if requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Hospital</th>
+                                <th>Blood Group</th>
+                                <th>Units</th>
+                                <th>City</th>
+                                <th>Urgency</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in requests %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ r[1] }}</td>
+                                <td><strong>{{ r[2] }}</strong></td>
+                                <td>{{ r[3] }}</td>
+                                <td>{{ r[4] }}</td>
+                                <td>
+                                    {% if r[5] == 'Emergency' %}
+                                    <span class="badge-urgent">Emergency</span>
+                                    {% elif r[5] == 'Urgent' %}
+                                    <span class="badge-normal">Urgent</span>
+                                    {% else %}
+                                    <span class="badge-unavailable">Normal</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ r[6] }}</td>
+                                <td>{{ r[7].strftime('%d %b %Y') if r[7] else '-' }}</td>
+                                <td>
+                                    <form method="POST"
+                                        action="{{ url_for('admin.delete_request_route', req_id=r[0]) }}"
+                                        data-confirm="Delete this blood request?">
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center text-muted">No blood requests in the system.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
