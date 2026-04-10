@@ -3,7 +3,7 @@ db_setup.py
 -----------
 One-time setup for running this project on a new PC.
 Enter your MySQL username and password; this script will:
-  1. Save credentials to config.py
+  1. Save credentials to .env
   2. Create the database and all tables
   3. Apply any schema patches
   4. Verify the connection
@@ -32,22 +32,20 @@ def get_credentials():
     return user, password
 
 
-def write_config(user, password):
-    """Write config.py with the given MySQL credentials."""
-    # Escape for Python string in config file
-    def escape(s):
-        return s.replace("\\", "\\\\").replace('"', '\\"')
-    config_content = '''DB_HOST = "localhost"
-DB_USER = "{}"
-DB_PASSWORD = "{}"
-DB_NAME = "blood_bank_portal"
-
-SECRET_KEY = "secretkey123"
-'''.format(escape(user), escape(password))
-    config_path = os.path.join(PROJECT_ROOT, "config.py")
-    with open(config_path, "w") as f:
-        f.write(config_content)
-    print("\n[OK] config.py updated with your credentials.")
+def write_env(user, password):
+    """Write .env with the given MySQL credentials."""
+    env_content = "\n".join([
+        "DB_HOST=localhost",
+        f"DB_USER={user}",
+        f"DB_PASSWORD={password}",
+        "DB_NAME=blood_bank_portal",
+        "SECRET_KEY=replace-with-a-strong-random-secret",
+        "",
+    ])
+    env_path = os.path.join(PROJECT_ROOT, ".env")
+    with open(env_path, "w") as f:
+        f.write(env_content)
+    print("\n[OK] .env updated with your credentials.")
 
 
 def create_database_and_tables():
@@ -106,7 +104,7 @@ def verify_connection():
 
 def main():
     user, password = get_credentials()
-    write_config(user, password)
+    write_env(user, password)
     create_database_and_tables()
     apply_patches()
     verify_connection()

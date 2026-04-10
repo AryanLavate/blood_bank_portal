@@ -1,8 +1,30 @@
+# Environment files
 .env
+.env.*
+!.env.example
+
+# Virtual environments
 .venv/
 venv/
+env/
+
+# Python cache/artifacts
 __pycache__/
 *.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Runtime files
+*.log
+*.pid
 *.sqlite3
 *.db
 

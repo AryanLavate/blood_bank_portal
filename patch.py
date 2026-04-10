@@ -1,5 +1,8 @@
 import MySQLdb
-conn = MySQLdb.connect(host='localhost', user='root', passwd='aryan0726', db='blood_bank_portal')
+
+from config import DB_HOST, DB_NAME, DB_PASSWORD, DB_USER
+
+conn = MySQLdb.connect(host=DB_HOST, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 cursor = conn.cursor()
 
 def add_col(table, col, defn):
