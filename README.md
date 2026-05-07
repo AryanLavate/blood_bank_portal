@@ -84,10 +84,3 @@ python run.py
 ```
 
 Open `http://127.0.0.1:5000`.
-
-## Security Notes
-
-- Passwords are hashed before storage.
-- SQL queries use parameterized inputs.
-- Sensitive credentials are managed through `.env`.
-- `.env` is ignored by Git to prevent secret leaks.
