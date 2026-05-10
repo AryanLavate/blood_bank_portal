@@ -1,8 +1,6 @@
 """
-app.py
-------
-Flask application factory.
-Registers all blueprints; unchanged URL structure for production on Render.
+Flask application factory + module-level app for imports and tooling.
+Gunicorn: gunicorn run:app --bind 0.0.0.0:$PORT
 """
 
 from flask import Flask
@@ -35,3 +33,6 @@ def create_app():
         return response
 
     return app
+
+
+app = create_app()

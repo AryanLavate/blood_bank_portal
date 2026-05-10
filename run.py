@@ -1,16 +1,12 @@
 """
-run.py
-------
-Exposes `app` for Gunicorn:  gunicorn run:app --bind 0.0.0.0:$PORT
+WSGI entry for Gunicorn on Render.
 
-Render sets PORT; local dev uses PORT or 5000.
+Start (Render): gunicorn run:app --bind 0.0.0.0:$PORT
 """
 
 import os
 
-from app import create_app
-
-app = create_app()
+from app import app
 
 if __name__ == "__main__":
     host = os.getenv("HOST", "127.0.0.1")

@@ -1,7 +1,7 @@
-# Blood Bank Portal — production dependencies (PostgreSQL only)
+# PostgreSQL only — runtime.txt pins Python 3.11.9 (avoids 3.14 + psycopg2 wheel issues on Render)
 Flask==2.3.3
 Werkzeug==2.3.7
 python-dotenv==1.0.1
-psycopg2-binary==2.9.9
-gunicorn==21.2.0
-sqlparse==0.4.4
+psycopg2-binary==2.9.10
+gunicorn==22.0.0
+sqlparse==0.5.1
