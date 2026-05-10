@@ -1,8 +1,13 @@
 """
-Application configuration.
-Loads from environment variables and optional .env (python-dotenv).
-Render: set DATABASE_URL to the PostgreSQL connection string from the dashboard.
-Local: set DATABASE_URL or DB_HOST / DB_USER / DB_PASSWORD / DB_NAME / DB_PORT.
+Application configuration for production and development.
+
+Render Web Service — set in the dashboard (Environment):
+  DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, SECRET_KEY
+
+Optional:
+  DATABASE_URL — if set, overrides DB_* for psycopg2 (full postgresql:// URL)
+  PGSSLMODE — sslmode for psycopg2 (default: require on *.render.com hosts, else prefer)
+  FLASK_DEBUG — set false in production
 """
 
 import os
@@ -13,7 +18,6 @@ load_dotenv()
 
 
 def _normalize_database_url(url: str) -> str:
-    """Render sometimes uses postgres://; psycopg2 expects postgresql://."""
     if not url:
         return ""
     url = url.strip()
@@ -22,9 +26,15 @@ def _normalize_database_url(url: str) -> str:
     return url
 
 
+# Optional single URL (Render “Internal Database URL” or external URL)
 DATABASE_URL = _normalize_database_url(os.getenv("DATABASE_URL", ""))
+if DATABASE_URL and "sslmode=" not in DATABASE_URL:
+    _sm = os.getenv("PGSSLMODE")
+    if _sm:
+        _sep = "&" if "?" in DATABASE_URL else "?"
+        DATABASE_URL = f"{DATABASE_URL}{_sep}sslmode={_sm}"
 
-# Individual connection parameters (used when DATABASE_URL is not set)
+# Render PostgreSQL — individual variables (recommended for your setup)
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
 DB_USER = os.getenv("DB_USER", "postgres")
@@ -33,13 +43,12 @@ DB_NAME = os.getenv("DB_NAME", "blood_bank_portal")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-secret-key-in-production")
 
-# Flask / gunicorn
 DEBUG = os.getenv("FLASK_DEBUG", "false").lower() in ("1", "true", "yes")
 
-# SSL for managed PostgreSQL (Render). Set PGSSLMODE=require on Render if not in URL.
-# Local dev: omit PGSSLMODE or use PGSSLMODE=disable
-if DATABASE_URL and "sslmode=" not in DATABASE_URL:
-    sslmode = os.getenv("PGSSLMODE")
-    if sslmode:
-        sep = "&" if "?" in DATABASE_URL else "?"
-        DATABASE_URL = f"{DATABASE_URL}{sep}sslmode={sslmode}"
+# psycopg2 sslmode: Render managed Postgres requires TLS for external hostnames
+_default_ssl = (
+    "require"
+    if "render.com" in (DB_HOST or "").lower()
+    else "prefer"
+)
+PG_SSLMODE = os.getenv("PGSSLMODE", _default_ssl)

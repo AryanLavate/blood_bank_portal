@@ -13,21 +13,7 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-import psycopg2
-
-from config import DATABASE_URL, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
-
-
-def _connect():
-    if DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL)
-    return psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        dbname=DB_NAME,
-    )
+from utils.db import get_connection
 
 
 def column_exists(cursor, table, column):
@@ -51,8 +37,10 @@ def add_column_if_missing(cursor, table, column, definition):
 
 
 def main():
+    from config import DB_NAME
+
     print("Connecting to database '{}'...".format(DB_NAME))
-    conn = _connect()
+    conn = get_connection()
     cursor = conn.cursor()
     print("Connected.\n")
 
