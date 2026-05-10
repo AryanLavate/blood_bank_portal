@@ -1,9 +1,11 @@
 """
-PostgreSQL via psycopg2-binary. No MySQL.
-Uses DATABASE_URL if set; otherwise DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME.
-"""
+PostgreSQL connections via psycopg2-binary.
+Compatible with all existing Flask blueprints and model code.
 
-import os
+Connection order:
+  1) DATABASE_URL if set
+  2) DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME (+ PG_SSLMODE)
+"""
 
 import psycopg2
 
@@ -19,6 +21,10 @@ from config import (
 
 
 def get_connection():
+    """
+    New connection per call (simple and safe for Gunicorn workers).
+    Caller must close the connection and cursor when done.
+    """
     if DATABASE_URL:
         conn = psycopg2.connect(DATABASE_URL)
     else:
@@ -29,7 +35,6 @@ def get_connection():
             password=DB_PASSWORD,
             dbname=DB_NAME,
             sslmode=PG_SSLMODE,
-            connect_timeout=int(os.getenv("PG_CONNECT_TIMEOUT", "10")),
         )
     conn.set_session(autocommit=False)
     return conn
