@@ -1,9 +1,8 @@
 """
 fix_db.py
 ---------
-Run this script ONCE to patch your existing database tables.
-It adds any missing columns that were not present when the database
-was originally created.
+Run this script ONCE to patch an existing PostgreSQL database if columns are missing
+(e.g. after an old MySQL migration).
 
 Usage (from project root):
     python fix_db.py
@@ -11,27 +10,40 @@ Usage (from project root):
 
 import sys
 import os
+
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-import MySQLdb
-from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+import psycopg2
+
+from config import DATABASE_URL, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
+
+
+def _connect():
+    if DATABASE_URL:
+        return psycopg2.connect(DATABASE_URL)
+    return psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        dbname=DB_NAME,
+    )
 
 
 def column_exists(cursor, table, column):
-    """Returns True if the column already exists in the table."""
     cursor.execute(
-        """SELECT COUNT(*) FROM information_schema.COLUMNS
-           WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s""",
-        (DB_NAME, table, column)
+        """SELECT 1 FROM information_schema.columns
+           WHERE table_schema = 'public' AND table_name = %s AND column_name = %s""",
+        (table, column),
     )
-    return cursor.fetchone()[0] > 0
+    return cursor.fetchone() is not None
 
 
 def add_column_if_missing(cursor, table, column, definition):
     if not column_exists(cursor, table, column):
         print("  Adding column '{}' to table '{}' ...".format(column, table))
         cursor.execute(
-            "ALTER TABLE {} ADD COLUMN {} {}".format(table, column, definition)
+            'ALTER TABLE "{}" ADD COLUMN {} {}'.format(table, column, definition)
         )
         print("  Done.")
     else:
@@ -40,71 +52,79 @@ def add_column_if_missing(cursor, table, column, definition):
 
 def main():
     print("Connecting to database '{}'...".format(DB_NAME))
-    conn = MySQLdb.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        passwd=DB_PASSWORD,
-        db=DB_NAME
-    )
+    conn = _connect()
     cursor = conn.cursor()
     print("Connected.\n")
 
     print("=== Patching table: blood_requests ===")
-    add_column_if_missing(cursor, "blood_requests", "status",
-                          "VARCHAR(20) DEFAULT 'Open'")
-    add_column_if_missing(cursor, "blood_requests", "city",
-                          "VARCHAR(100)")
-    add_column_if_missing(cursor, "blood_requests", "urgency",
-                          "VARCHAR(20) DEFAULT 'Normal'")
-    add_column_if_missing(cursor, "blood_requests", "created_at",
-                          "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    add_column_if_missing(
+        cursor, "blood_requests", "status", "VARCHAR(20) DEFAULT 'Open'"
+    )
+    add_column_if_missing(cursor, "blood_requests", "city", "VARCHAR(100)")
+    add_column_if_missing(
+        cursor, "blood_requests", "urgency", "VARCHAR(20) DEFAULT 'Normal'"
+    )
+    add_column_if_missing(
+        cursor,
+        "blood_requests",
+        "created_at",
+        "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+    )
 
     print("\n=== Patching table: organ_requests ===")
-    add_column_if_missing(cursor, "organ_requests", "status",
-                          "VARCHAR(20) DEFAULT 'Open'")
-    add_column_if_missing(cursor, "organ_requests", "city",
-                          "VARCHAR(100)")
-    add_column_if_missing(cursor, "organ_requests", "urgency",
-                          "VARCHAR(20) DEFAULT 'Normal'")
-    add_column_if_missing(cursor, "organ_requests", "notes",
-                          "TEXT")
-    add_column_if_missing(cursor, "organ_requests", "created_at",
-                          "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    add_column_if_missing(
+        cursor, "organ_requests", "status", "VARCHAR(20) DEFAULT 'Open'"
+    )
+    add_column_if_missing(cursor, "organ_requests", "city", "VARCHAR(100)")
+    add_column_if_missing(
+        cursor, "organ_requests", "urgency", "VARCHAR(20) DEFAULT 'Normal'"
+    )
+    add_column_if_missing(cursor, "organ_requests", "notes", "TEXT")
+    add_column_if_missing(
+        cursor,
+        "organ_requests",
+        "created_at",
+        "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+    )
 
     print("\n=== Patching table: users ===")
-    add_column_if_missing(cursor, "users", "city",
-                          "VARCHAR(100)")
-    add_column_if_missing(cursor, "users", "availability_status",
-                          "VARCHAR(20) DEFAULT 'Available'")
-    add_column_if_missing(cursor, "users", "is_verified",
-                          "TINYINT(1) DEFAULT 0")
-    add_column_if_missing(cursor, "users", "organ_donor",
-                          "TINYINT(1) DEFAULT 0")
-    add_column_if_missing(cursor, "users", "organ_donor",
-                          "TINYINT(1) DEFAULT 0")
-    add_column_if_missing(cursor, "users", "created_at",
-                          "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    add_column_if_missing(cursor, "users", "city", "VARCHAR(100)")
+    add_column_if_missing(
+        cursor,
+        "users",
+        "availability_status",
+        "VARCHAR(20) DEFAULT 'Available'",
+    )
+    add_column_if_missing(cursor, "users", "is_verified", "BOOLEAN DEFAULT FALSE")
+    add_column_if_missing(cursor, "users", "organ_donor", "BOOLEAN DEFAULT FALSE")
+    add_column_if_missing(
+        cursor,
+        "users",
+        "created_at",
+        "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+    )
 
     print("\n=== Patching table: donations ===")
-    add_column_if_missing(cursor, "donations", "donation_type",
-                          "VARCHAR(20) DEFAULT 'Blood'")
-    add_column_if_missing(cursor, "donations", "donation_date",
-                          "DATE")
+    add_column_if_missing(
+        cursor, "donations", "donation_type", "VARCHAR(20) DEFAULT 'Blood'"
+    )
+    add_column_if_missing(cursor, "donations", "donation_date", "DATE")
 
     print("\n=== Patching table: hospitals ===")
-    add_column_if_missing(cursor, "hospitals", "city",
-                          "VARCHAR(100)")
-    add_column_if_missing(cursor, "hospitals", "is_verified",
-                          "TINYINT(1) DEFAULT 0")
-    add_column_if_missing(cursor, "hospitals", "created_at",
-                          "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    add_column_if_missing(cursor, "hospitals", "city", "VARCHAR(100)")
+    add_column_if_missing(cursor, "hospitals", "is_verified", "BOOLEAN DEFAULT FALSE")
+    add_column_if_missing(
+        cursor,
+        "hospitals",
+        "created_at",
+        "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+    )
 
     conn.commit()
     cursor.close()
     conn.close()
 
     print("\nAll patches applied. Your database is now up to date.")
-    print("Restart your Flask app and everything should work.")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,6 @@ Handles registration and login for all three user types:
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from utils.db import get_connection
 from utils.helpers import hash_password, check_password
 from models.user_model import create_user, get_user_by_email
 from models.hospital_model import create_hospital, get_hospital_by_email

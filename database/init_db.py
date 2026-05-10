@@ -1,43 +1,46 @@
 """
 init_db.py
 ----------
-Run this script once to create your database and all tables automatically.
-Usage: python database/init_db.py
+Apply database/schema.sql to the configured PostgreSQL database.
+
+Usage (from project root):
+    python database/init_db.py
+
+Requires: DATABASE_URL or DB_HOST / DB_USER / DB_PASSWORD / DB_NAME (see config.py).
+Uses sqlparse to split statements (handles dollar-quoted functions in schema).
 """
 
-import sys
 import os
+import sys
 
-# Add project root to path so we can import config
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import MySQLdb
-from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+import sqlparse
+
+from utils.db import get_connection
+
 
 def run_schema():
-    # First connect without selecting a database
-    conn = MySQLdb.connect(host=DB_HOST, user=DB_USER, passwd=DB_PASSWORD)
-    cursor = conn.cursor()
-
-    schema_path = os.path.join(os.path.dirname(__file__), 'schema.sql')
-
-    with open(schema_path, 'r') as f:
+    schema_path = os.path.join(os.path.dirname(__file__), "schema.sql")
+    with open(schema_path, "r", encoding="utf-8") as f:
         sql_content = f.read()
 
-    # Split on semicolons and run each statement
-    statements = [s.strip() for s in sql_content.split(';') if s.strip() and not s.strip().startswith('--')]
+    conn = get_connection()
+    conn.autocommit = True
+    cursor = conn.cursor()
 
-    for statement in statements:
-        try:
-            cursor.execute(statement)
-            conn.commit()
-        except MySQLdb.Error as e:
-            print("Error on statement: " + statement[:60])
-            print("MySQL Error: " + str(e))
+    try:
+        for statement in sqlparse.split(sql_content):
+            stmt = statement.strip()
+            if not stmt:
+                continue
+            cursor.execute(stmt)
+    finally:
+        cursor.close()
+        conn.close()
 
-    cursor.close()
-    conn.close()
-    print("Database and tables created successfully.")
+    print("Schema applied successfully.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     run_schema()

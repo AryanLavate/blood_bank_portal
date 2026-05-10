@@ -10,26 +10,17 @@ from utils.db import get_connection
 def upsert_blood_stock(hospital_id, blood_group, units_available):
     """
     Inserts or updates the blood stock for a given hospital and blood group.
-    Uses INSERT ... ON DUPLICATE KEY UPDATE pattern via a unique check.
+    PostgreSQL: ON CONFLICT on (hospital_id, blood_group).
     """
     conn = get_connection()
     cursor = conn.cursor()
-    # Check if record already exists for this hospital + blood group
     cursor.execute(
-        "SELECT id FROM blood_stock WHERE hospital_id = %s AND blood_group = %s",
-        (hospital_id, blood_group)
+        """INSERT INTO blood_stock (hospital_id, blood_group, units_available)
+           VALUES (%s, %s, %s)
+           ON CONFLICT (hospital_id, blood_group)
+           DO UPDATE SET units_available = EXCLUDED.units_available""",
+        (hospital_id, blood_group, units_available),
     )
-    existing = cursor.fetchone()
-    if existing:
-        cursor.execute(
-            "UPDATE blood_stock SET units_available = %s WHERE hospital_id = %s AND blood_group = %s",
-            (units_available, hospital_id, blood_group)
-        )
-    else:
-        cursor.execute(
-            "INSERT INTO blood_stock (hospital_id, blood_group, units_available) VALUES (%s, %s, %s)",
-            (hospital_id, blood_group, units_available)
-        )
     conn.commit()
     cursor.close()
     conn.close()
@@ -40,8 +31,9 @@ def get_stock_by_hospital(hospital_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT blood_group, units_available, updated_at FROM blood_stock WHERE hospital_id = %s ORDER BY blood_group",
-        (hospital_id,)
+        """SELECT blood_group, units_available, updated_at FROM blood_stock
+           WHERE hospital_id = %s ORDER BY blood_group""",
+        (hospital_id,),
     )
     stock = cursor.fetchall()
     cursor.close()

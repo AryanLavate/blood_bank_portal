@@ -71,7 +71,10 @@ def verify_hospital(hospital_id):
     """Marks a hospital as verified by admin."""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE hospitals SET is_verified = 1 WHERE id = %s", (hospital_id,))
+    cursor.execute(
+        "UPDATE hospitals SET is_verified = TRUE WHERE id = %s",
+        (hospital_id,),
+    )
     conn.commit()
     cursor.close()
     conn.close()

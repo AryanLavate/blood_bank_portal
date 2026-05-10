@@ -6,12 +6,13 @@ Registers all blueprints and configures the app.
 """
 
 from flask import Flask
-from config import SECRET_KEY
 
-from routes.auth_routes     import auth_bp
-from routes.user_routes     import user_bp
+from config import DEBUG, SECRET_KEY
+
+from routes.auth_routes import auth_bp
+from routes.user_routes import user_bp
 from routes.hospital_routes import hospital_bp
-from routes.admin_routes    import admin_bp
+from routes.admin_routes import admin_bp
 
 
 def create_app():
@@ -19,6 +20,7 @@ def create_app():
 
     app = Flask(__name__)
     app.secret_key = SECRET_KEY
+    app.config["DEBUG"] = DEBUG
 
     # Register all route blueprints
     app.register_blueprint(auth_bp)
@@ -28,9 +30,9 @@ def create_app():
 
     @app.after_request
     def add_cache_control(response):
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '-1'
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "-1"
         return response
 
     return app
