@@ -1,9 +1,8 @@
 """
 run.py
 ------
-Exposes `app` for Gunicorn:  gunicorn run:app --bind 0.0.0.0:$PORT
-
-Render sets PORT; local dev uses PORT or 5000.
+Entry point for local development and gunicorn (Render).
+Gunicorn: gunicorn run:app --bind 0.0.0.0:$PORT
 """
 
 import os
@@ -15,7 +14,7 @@ app = create_app()
 if __name__ == "__main__":
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "5000"))
-    debug = os.getenv("FLASK_DEBUG", "false").lower() in ("1", "true", "yes")
+    debug = os.getenv("FLASK_DEBUG", "true").lower() in ("1", "true", "yes")
 
     print("Login URLs:")
     print(f"- User (Donor): http://{host}:{port}/login")
